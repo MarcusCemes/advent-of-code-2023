@@ -2,5 +2,14 @@
 name = "advent-of-code-2023"
 version = "0.1.0"
 edition = "2021"
+default-run = "advent-of-code-2023"
+publish = false
+
+[lib]
+doctest = false
+
+[features]
+test_lib = []
 
 [dependencies]
+pico-args = "0.5.0"
