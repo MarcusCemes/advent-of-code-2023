@@ -1,8 +1,8 @@
 [package]
-name = "advent-of-code-2023"
+name = "advent_of_code"
 version = "0.1.0"
 edition = "2021"
-default-run = "advent-of-code-2023"
+default-run = "advent_of_code"
 publish = false
 
 [lib]
