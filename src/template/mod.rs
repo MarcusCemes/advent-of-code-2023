@@ -20,11 +20,11 @@ pub fn read_file(folder: &str, day: Day) -> String {
 }
 
 #[must_use]
-pub fn read_file_part(folder: &str, day: Day, part: u32) -> String {
+pub fn read_part(day: Day, part: u32) -> String {
     let cwd = env::current_dir().unwrap();
     let filepath = cwd
         .join("data")
-        .join(folder)
+        .join("examples")
         .join(format!("{day}-{part}.txt"));
 
     let f = fs::read_to_string(filepath);
