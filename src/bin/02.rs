@@ -1,10 +1,12 @@
 advent_of_code::solution!(2);
 
-const MAX_SET: Set = Set {
-    red: 12,
-    green: 13,
-    blue: 14,
-};
+/* == Constants ==  */
+
+const MAX_RED: u32 = 12;
+const MAX_GREEN: u32 = 13;
+const MAX_BLUE: u32 = 14;
+
+/* == Definitions == */
 
 #[derive(Debug, Default)]
 struct Set {
@@ -13,43 +15,64 @@ struct Set {
     blue: u32,
 }
 
-#[derive(Debug)]
-struct Game {
+struct Game<'a> {
     id: u32,
-    sets: Vec<Set>,
+    set_str: &'a str, // Reference avoids heap allocating a Vec<Set>
 }
 
+/* == Solutions == */
+
 pub fn part_one(input: &str) -> Option<u32> {
-    Some(
-        input
-            .lines()
-            .map(parse_line)
-            .filter(|game| game.is_valid())
-            .map(|game| game.id)
-            .sum(),
-    )
+    let result = input
+        .lines()
+        .map(parse_line)
+        .filter(|game| game.is_valid())
+        .map(|game| game.id)
+        .sum();
+
+    Some(result)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    Some(
-        input
-            .lines()
-            .map(parse_line)
-            .map(|game| game.required_cubes())
-            .map(|set| set.power())
-            .sum(),
-    )
+    let result = input
+        .lines()
+        .map(parse_line)
+        .map(|game| game.required_cubes())
+        .map(|set| set.power())
+        .sum();
+
+    Some(result)
 }
 
 fn parse_line(line: &str) -> Game {
-    let (left, right) = line.split_once(':').unwrap();
-    let id = left[5..].parse().unwrap();
+    let (id_str, set_str) = line.split_once(':').unwrap();
+    let id = id_str[5..].parse().unwrap();
+    Game { id, set_str }
+}
 
-    let set_it = right.split(';').map(|set_str| {
-        set_str
-            .split(',')
-            .map(|term| term.trim())
-            .map(|term| term.split_once(' ').unwrap())
+impl Game<'_> {
+    fn sets(&self) -> impl Iterator<Item = Set> + '_ {
+        self.set_str.split(';').map(Set::parse_str)
+    }
+
+    fn is_valid(&self) -> bool {
+        self.sets().all(|set| set.is_valid())
+    }
+
+    fn required_cubes(&self) -> Set {
+        self.sets().fold(Set::default(), |mut set, other| {
+            set.red = set.red.max(other.red);
+            set.green = set.green.max(other.green);
+            set.blue = set.blue.max(other.blue);
+            set
+        })
+    }
+}
+
+impl Set {
+    fn parse_str(str: &str) -> Set {
+        str.split(',')
+            .map(|term| term.trim().split_once(' ').unwrap())
             .fold(Set::default(), |mut set, (count_str, colour)| {
                 let count = count_str.parse().unwrap();
 
@@ -62,38 +85,18 @@ fn parse_line(line: &str) -> Game {
 
                 set
             })
-    });
-
-    Game {
-        id,
-        sets: set_it.collect(),
     }
-}
 
-impl Game {
     fn is_valid(&self) -> bool {
-        self.sets.iter().all(|set| set.is_valid())
-    }
-
-    fn required_cubes(&self) -> Set {
-        self.sets.iter().fold(Set::default(), |mut set, other| {
-            set.red = set.red.max(other.red);
-            set.green = set.green.max(other.green);
-            set.blue = set.blue.max(other.blue);
-            set
-        })
-    }
-}
-
-impl Set {
-    fn is_valid(&self) -> bool {
-        self.red <= MAX_SET.red && self.green <= MAX_SET.green && self.blue <= MAX_SET.blue
+        self.red <= MAX_RED && self.green <= MAX_GREEN && self.blue <= MAX_BLUE
     }
 
     fn power(&self) -> u32 {
-        [self.red, self.green, self.blue].iter().product()
+        self.red * self.green * self.blue
     }
 }
+
+/* == Tests == */
 
 #[cfg(test)]
 mod tests {

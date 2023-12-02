@@ -9,12 +9,12 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 |      Day | Name           | Source       | Part 1 | Part 2 | Time 1  | Time 2  |
 | -------: | -------------- | ------------ | :----: | :----: | :-----: | :-----: |
 | [1][p01] | Trebuchet?!    | [01.rs][s01] |   ⭐   |   ⭐   | 33.1 µs | 42.1 µs |
-| [2][p02] | Cube Conundrum | [02.rs][s02] |   ⭐   |   ⭐   | 58.8 µs | 60.0 µs |
+| [2][p02] | Cube Conundrum | [02.rs][s02] |   ⭐   |   ⭐   | 26.5 µs | 37.2 µs |
 |          | ...            |              |        |        |         |         |
 
-_Benchmarked on Intel i7-11800H @ 2.30 GHz_
-
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
+
+_Benchmarked on Intel i7-11800H @ 2.30 GHz (over many samples)._
 
 </div>
 
