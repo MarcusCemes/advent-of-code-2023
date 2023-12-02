@@ -25,8 +25,8 @@ struct Game<'a> {
 pub fn part_one(input: &str) -> Option<u32> {
     let result = input
         .lines()
-        .map(parse_line)
-        .filter(|game| game.is_valid())
+        .map(Game::parse_str)
+        .filter(Game::is_valid)
         .map(|game| game.id)
         .sum();
 
@@ -36,31 +36,31 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u32> {
     let result = input
         .lines()
-        .map(parse_line)
+        .map(Game::parse_str)
         .map(|game| game.required_cubes())
-        .map(|set| set.power())
+        .map(|set| set.cube_power())
         .sum();
 
     Some(result)
 }
 
-fn parse_line(line: &str) -> Game {
-    let (id_str, set_str) = line.split_once(':').unwrap();
-    let id = id_str[5..].parse().unwrap();
-    Game { id, set_str }
-}
-
 impl Game<'_> {
-    fn sets(&self) -> impl Iterator<Item = Set> + '_ {
+    fn parse_str(line: &str) -> Game {
+        let (id_str, set_str) = line.split_once(':').unwrap();
+        let id = id_str[5..].parse().unwrap();
+        Game { id, set_str }
+    }
+
+    fn iter_sets(&self) -> impl Iterator<Item = Set> + '_ {
         self.set_str.split(';').map(Set::parse_str)
     }
 
     fn is_valid(&self) -> bool {
-        self.sets().all(|set| set.is_valid())
+        self.iter_sets().all(|set| set.is_valid())
     }
 
     fn required_cubes(&self) -> Set {
-        self.sets().fold(Set::default(), |mut set, other| {
+        self.iter_sets().fold(Set::default(), |mut set, other| {
             set.red = set.red.max(other.red);
             set.green = set.green.max(other.green);
             set.blue = set.blue.max(other.blue);
@@ -70,7 +70,7 @@ impl Game<'_> {
 }
 
 impl Set {
-    fn parse_str(str: &str) -> Set {
+    fn parse_str(str: &str) -> Self {
         str.split(',')
             .map(|term| term.trim().split_once(' ').unwrap())
             .fold(Set::default(), |mut set, (count_str, colour)| {
@@ -91,7 +91,7 @@ impl Set {
         self.red <= MAX_RED && self.green <= MAX_GREEN && self.blue <= MAX_BLUE
     }
 
-    fn power(&self) -> u32 {
+    fn cube_power(&self) -> u32 {
         self.red * self.green * self.blue
     }
 }
