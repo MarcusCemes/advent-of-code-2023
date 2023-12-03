@@ -10,7 +10,7 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 | -------: | -------------- | ------------ | :----: | :----: | :-----: | :-----: |
 | [1][p01] | Trebuchet?!    | [01.rs][s01] |   ⭐   |   ⭐   | 33.1 µs | 42.1 µs |
 | [2][p02] | Cube Conundrum | [02.rs][s02] |   ⭐   |   ⭐   | 26.5 µs | 37.2 µs |
-| [3][p03] | Gear Ratios    | [03.rs][s03] |   ⭐   |   🎁   | 52.6 µs |    -    |
+| [3][p03] | Gear Ratios    | [03.rs][s03] |   ⭐   |   ⭐   | 39.1 µs | 30.7 µs |
 |          | ...            |              |        |        |         |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
@@ -28,7 +28,7 @@ This repository uses a modified version of [this template][template]. Thanks Fel
 Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 
 [rust-badge]: https://img.shields.io/badge/Rust-d55826?logo=rust&style=for-the-badge
-[solutions-badge]: https://img.shields.io/badge/solutions-2/50-brightgreen?logo=star&style=for-the-badge
+[solutions-badge]: https://img.shields.io/badge/solutions-6/50-brightgreen?logo=star&style=for-the-badge
 [advent-of-code]: https://adventofcode.com/
 [rust]: https://www.rust-lang.org/
 [template]: https://github.com/fspoettel/advent-of-code-rust

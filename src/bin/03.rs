@@ -1,19 +1,27 @@
+#![feature(iter_advance_by)]
+
 use colored::Colorize;
-use std::fmt::{Debug, Display};
+use std::fmt::Display;
+
+use advent_of_code::tools::{Coords, UCoords};
 
 advent_of_code::solution!(3);
 
-#[derive(Debug)]
-struct Part {
-    length: usize,
-    value: u32,
-    x: usize,
-    y: usize,
-}
+const GEAR: u8 = b'*';
 
 struct Schematic<'a> {
     line_width: usize,
     lines: Vec<&'a str>,
+}
+
+struct Part {
+    length: usize,
+    value: u32,
+    coords: UCoords,
+}
+
+struct Gear {
+    ratio: u32,
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -21,15 +29,20 @@ pub fn part_one(input: &str) -> Option<u32> {
 
     Some(
         schematic
-            .parts()
+            .iter_parts()
             .filter(|part| schematic.valid_part(part))
             .map(|p| p.value)
             .sum(),
     )
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    Some(
+        Schematic::parse_str(input)
+            .iter_gears()
+            .map(|gear| gear.ratio)
+            .sum(),
+    )
 }
 
 impl Schematic<'_> {
@@ -39,93 +52,137 @@ impl Schematic<'_> {
         Schematic { line_width, lines }
     }
 
-    // fn at(&self, x: usize, y: usize) -> Option<u8> {
-    //     self.lines
-    //         .get(y)
-    //         .and_then(|line| line.as_bytes().get(x).copied())
-    // }
-
-    fn parts(&self) -> impl Iterator<Item = Part> + '_ {
+    /// Linear scan of the schematic, yielding each found part.
+    fn iter_parts(&self) -> impl Iterator<Item = Part> + '_ {
         self.lines
             .iter()
             .enumerate()
             .flat_map(|(y, line)| LinePartIterator::new(line, y))
     }
 
+    /// Checks whether the part has any adjacent non-digit non-period characters.
     fn valid_part(&self, part: &Part) -> bool {
-        let valid = self.neighbourhood(part).any(|line| {
-            line.bytes().any(|char| {
-                // print!("{}", char as char);
-                !char.is_ascii_digit() && char != b'.'
-            })
-        });
-
-        // if valid {
-        //     println!(" ok");
-        // } else {
-        //     println!(" bad");
-        // }
-
-        valid
+        self.neighbourhood(part).any(|line| {
+            line.bytes()
+                .any(|char| !char.is_ascii_digit() && char != b'.')
+        })
     }
 
+    /// Returns string slices that cover the immediate neighbourhood of a part.
+    /// Returning string slices allows for easy and safe linear iteration, without
+    /// having to worry about bounds checking.
     fn neighbourhood(&self, part: &Part) -> impl Iterator<Item = &str> + '_ {
-        let t = part.y.saturating_sub(1);
-        let b = part.y.saturating_add(1).min(self.lines.len() - 1);
-        let l = part.x.saturating_sub(1);
-        let r = part.x.saturating_add(part.length).min(self.line_width - 1);
+        let t = part.coords.y.saturating_sub(1);
+        let b = part.coords.y.saturating_add(1).min(self.lines.len() - 1);
+        let l = part.coords.x.saturating_sub(1);
+        let r = part
+            .coords
+            .x
+            .saturating_add(part.length)
+            .min(self.line_width - 1);
 
-        // print!(" ({}, {}) -> ({}, {}) ", l, t, r, b);
-        let n = self.lines[t..=b].iter().map(move |line| {
-            // println!("{} -> {}", line, &line[l..=r]);
-            &line[l..=r]
-        });
-
-        // println!("{:?}", n.clone().join(","));
-        n
+        self.lines[t..=b].iter().map(move |line| &line[l..=r])
     }
-}
 
-impl Display for Schematic<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let parts: Vec<Part> = self.parts().collect();
+    /// Linear scan of schematic, yielding each found gear.
+    fn iter_gears(&self) -> impl Iterator<Item = Gear> + '_ {
+        self.lines.iter().enumerate().flat_map(move |(y, line)| {
+            line.bytes().enumerate().filter_map(move |(x, char)| {
+                (char == GEAR)
+                    .then(|| self.read_gear(UCoords { x, y }))
+                    .flatten()
+            })
+        })
+    }
 
-        for (y, line) in self.lines.iter().enumerate() {
-            let mut bytes = line.bytes().enumerate();
-
-            while let Some((x, char)) = bytes.next() {
-                if char.is_ascii_digit() {
-                    if let Some(part) = parts.iter().find(|part| part.x == x && part.y == y) {
-                        if self.valid_part(part) {
-                            write!(f, "{}", part.value.to_string().green())?;
-                        } else {
-                            write!(f, "{}", part.value.to_string().red())?;
-                        }
-
-                        for _ in 0..(part.length.saturating_sub(2)) {
-                            bytes.next();
-                        }
-                    }
-                } else {
-                    write!(f, "{}", char as char)?;
-                }
-            }
-
-            writeln!(f)?;
+    /// Decodes a gear, if it is valid (has exactly two adjacent parts).
+    fn read_gear(&self, at: UCoords) -> Option<Gear> {
+        if self.get(at)? != GEAR {
+            return None;
         }
-        Ok(())
-    }
-}
 
-impl Debug for Schematic<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for line in &self.lines {
-            writeln!(f, "{}", line)?;
+        let mut i = 0;
+        let mut ratio = 1;
+
+        for part in self.adjacent_parts(at).take(3) {
+            i += 1;
+            ratio *= part.value;
         }
-        Ok(())
+
+        (i == 2).then_some(Gear { ratio })
+    }
+
+    // Returns any parts that are adjacent to the given coordinates.
+    fn adjacent_parts(&self, at: UCoords) -> impl Iterator<Item = Part> + '_ {
+        let coords: Coords = at.into();
+
+        (-1..=1)
+            .flat_map(move |dy| {
+                self.horizontally_adjacent_parts(Coords {
+                    x: coords.x,
+                    y: coords.y + dy,
+                })
+            })
+            .flatten()
+    }
+
+    /// Given a coordinate, returns between 0 and 2 parts that can be found in
+    /// a 3-wide horizontal window (to the left, in it and to the right).
+    /// If the coordinate is a part, there can't be parts to the left or the right.
+    fn horizontally_adjacent_parts(&self, at: Coords) -> [Option<Part>; 2] {
+        match self.part_at(at) {
+            Some(part) => [Some(part), None],
+            None => [self.part_at(at.left()), self.part_at(at.right())],
+        }
+    }
+
+    /// Finds a part that is located at the given coordinates.
+    /// Scans left and right to find the start and end of the part.
+    fn part_at(&self, at: Coords) -> Option<Part> {
+        let UCoords { x, y } = at.to_ucoords(&self.size())?;
+        let line = self.lines.get(y).unwrap();
+
+        if !line.as_bytes().get(x).unwrap().is_ascii_digit() {
+            return None;
+        }
+
+        let start = line[..x]
+            .rfind(|c: char| !c.is_ascii_digit())
+            .map(|idx| idx + 1)
+            .unwrap_or(0);
+
+        let end = line[x..]
+            .find(|c: char| !c.is_ascii_digit())
+            .map(|idx| idx + x)
+            .unwrap_or_else(|| line.len());
+
+        let value = line[start..end].parse().unwrap();
+
+        Some(Part {
+            value,
+            length: end - start,
+            coords: UCoords { x: start, y },
+        })
+    }
+
+    /// Returns the character at the given coordinates, if it's in bounds.
+    fn get(&self, at: UCoords) -> Option<u8> {
+        self.lines
+            .get(at.y)
+            .and_then(|line| line.as_bytes().get(at.x).copied())
+    }
+
+    /// Returns the size of the schematic.
+    fn size(&self) -> UCoords {
+        UCoords {
+            x: self.line_width,
+            y: self.lines.len(),
+        }
     }
 }
 
+/// Iterator that does a linear scan of the schematic, line by line,
+/// yielding each found part.
 struct LinePartIterator<'a> {
     offset: usize,
     window: Option<&'a str>,
@@ -161,11 +218,11 @@ impl Iterator for LinePartIterator<'_> {
         let part = Part {
             value: value.parse().unwrap(),
             length: value.len(),
-            x: self.offset,
-            y: self.y,
+            coords: UCoords {
+                x: self.offset,
+                y: self.y,
+            },
         };
-
-        // print!("{} ({},{})", part.value, part.x, part.y);
 
         self.window = rest;
         self.offset += value.len() + 1;
@@ -173,6 +230,34 @@ impl Iterator for LinePartIterator<'_> {
         Some(part)
     }
 }
+
+/* == Visualisation == */
+
+impl Display for Schematic<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for (y, line) in self.lines.iter().enumerate() {
+            let mut bytes = line.bytes().enumerate();
+
+            while let Some((x, char)) = bytes.next() {
+                if let Some(part) = self.part_at(UCoords { x, y }.into()) {
+                    let value = part.value.to_string();
+                    let valid = self.valid_part(&part);
+                    let stylised = if valid { value.green() } else { value.red() };
+
+                    write!(f, "{stylised}")?;
+                    let _ = bytes.advance_by(part.length.saturating_sub(1));
+                } else {
+                    write!(f, "{}", char as char)?;
+                }
+            }
+
+            writeln!(f)?;
+        }
+        Ok(())
+    }
+}
+
+/* == Tests == */
 
 #[cfg(test)]
 mod tests {
@@ -203,8 +288,14 @@ mod tests {
     }
 
     #[test]
-    fn test_part_two() {
+    fn test_part_two_a() {
         let result = part_two(&advent_of_code::template::read_case(DAY, 1));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(467835));
+    }
+
+    #[test]
+    fn test_part_two_b() {
+        let result = part_two(&advent_of_code::template::read_case(DAY, 4));
+        assert_eq!(result, Some(442));
     }
 }
