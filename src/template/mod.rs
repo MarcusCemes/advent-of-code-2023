@@ -31,6 +31,18 @@ pub fn read_part(day: Day, part: u32) -> String {
     f.expect("could not open input file")
 }
 
+#[must_use]
+pub fn read_case(day: Day, case: u32) -> String {
+    let cwd = env::current_dir().unwrap();
+    let filepath = cwd
+        .join("data")
+        .join("examples")
+        .join(format!("{day}-{case}.txt"));
+
+    let f = fs::read_to_string(filepath);
+    f.expect("could not open input file")
+}
+
 /// Creates the constant `DAY` and sets up the input and runner for each part.
 #[macro_export]
 macro_rules! solution {
