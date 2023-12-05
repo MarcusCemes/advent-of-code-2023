@@ -12,7 +12,7 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 | [2][p02] | Cube Conundrum                  | [02.rs][s02] |   ⭐   |   ⭐   | 26.5 µs | 37.2 µs |
 | [3][p03] | Gear Ratios                     | [03.rs][s03] |   ⭐   |   ⭐   | 39.1 µs | 30.7 µs |
 | [4][p04] | Scratchcards                    | [04.rs][s04] |   ⭐   |   ⭐   | 82.4 µs | 84.0 µs |
-| [5][p05] | If You Give A Seed A Fertilizer | [05.rs][s05] |   ⭐   |   ⭐   | 15.3 µs | 26.3 µs |
+| [5][p05] | If You Give A Seed A Fertilizer | [05.rs][s05] |   ⭐   |   ⭐   | 18.7 µs | 23.5 µs |
 |          | ...                             |              |        |        |         |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
