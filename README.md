@@ -14,6 +14,7 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 | [4][p04] | Scratchcards                    | [04.rs][s04] |   ⭐   |   ⭐   | 82.4 µs | 84.0 µs |
 | [5][p05] | If You Give A Seed A Fertilizer | [05.rs][s05] |   ⭐   |   ⭐   | 18.7 µs | 23.5 µs |
 | [6][p06] | Wait For It                     | [06.rs][s06] |   ⭐   |   ⭐   |  174 ns |  180 ns |
+| [7][p07] | Camel Cards                     | [07.rs][s07] |   ⭐   |   ⭐   |  150 µs |  157 µs |
 |          | ...                             |              |        |        |         |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
@@ -31,7 +32,7 @@ This repository uses a modified version of [this template][template]. Thanks Fel
 Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 
 [rust-badge]: https://img.shields.io/badge/Rust-d55826?logo=rust&style=for-the-badge
-[solutions-badge]: https://img.shields.io/badge/solutions-12/50-brightgreen?logo=star&style=for-the-badge
+[solutions-badge]: https://img.shields.io/badge/solutions-14/50-brightgreen?logo=star&style=for-the-badge
 [advent-of-code]: https://adventofcode.com/
 [rust]: https://www.rust-lang.org/
 [template]: https://github.com/fspoettel/advent-of-code-rust
@@ -41,9 +42,11 @@ Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 [p04]: https://adventofcode.com/2023/day/4
 [p05]: https://adventofcode.com/2023/day/5
 [p06]: https://adventofcode.com/2023/day/6
+[p07]: https://adventofcode.com/2023/day/7
 [s01]: src/bin/01.rs
 [s02]: src/bin/02.rs
 [s03]: src/bin/03.rs
 [s04]: src/bin/04.rs
 [s05]: src/bin/05.rs
 [s06]: src/bin/06.rs
+[s07]: src/bin/07.rs
