@@ -17,7 +17,7 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 |  [7][p07] | Camel Cards                     | [07.rs][s07] |   ⭐   |   ⭐   |  150 µs |  157 µs |
 |  [8][p08] | Haunted Wasteland               | [08.rs][s08] |   ⭐   |   ⭐   |  389 µs |  2.5 ms |
 |  [9][p09] | Mirage Maintenance              | [09.rs][s09] |   ⭐   |   ⭐   | 99.5 µs | 96.5 µs |
-| [10][p10] | Pipe Maze                       | [10.rs][s10] |   ⭐   |   🎁   |  312 µs |       - |
+| [10][p10] | Pipe Maze                       | [10.rs][s10] |   ⭐   |   ⭐   |  293 µs |  315 µs |
 |           | ...                             |              |        |        |         |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
@@ -35,7 +35,7 @@ This repository uses a modified version of [this template][template]. Thanks Fel
 Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 
 [rust-badge]: https://img.shields.io/badge/Rust-d55826?logo=rust&style=for-the-badge
-[solutions-badge]: https://img.shields.io/badge/solutions-19/50-brightgreen?logo=star&style=for-the-badge
+[solutions-badge]: https://img.shields.io/badge/solutions-20/50-brightgreen?logo=star&style=for-the-badge
 [advent-of-code]: https://adventofcode.com/
 [rust]: https://www.rust-lang.org/
 [template]: https://github.com/fspoettel/advent-of-code-rust
