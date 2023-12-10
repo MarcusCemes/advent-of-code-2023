@@ -139,7 +139,7 @@ impl Schematic<'_> {
     /// Finds a part that is located at the given coordinates.
     /// Scans left and right to find the start and end of the part.
     fn part_at(&self, at: Coords) -> Option<Part> {
-        let UCoords { x, y } = at.to_ucoords(&self.size())?;
+        let UCoords { x, y } = at.ucoords(&self.size())?;
         let line = self.lines.get(y).unwrap();
 
         if !line.as_bytes().get(x).unwrap().is_ascii_digit() {

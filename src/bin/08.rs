@@ -1,6 +1,6 @@
 advent_of_code::solution!(8);
 
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, mem};
 
 /* == Definitions == */
 
@@ -151,10 +151,9 @@ fn lcm(first: u64, second: u64) -> u64 {
 fn gcd(first: u64, second: u64) -> u64 {
     let mut max = first;
     let mut min = second;
+
     if min > max {
-        let val = max;
-        max = min;
-        min = val;
+        mem::swap(&mut min, &mut max);
     }
 
     loop {
