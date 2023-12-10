@@ -4,12 +4,14 @@ extern crate test;
 
 advent_of_code::solution!(10);
 
-use std::fmt::Debug;
+use std::{fmt::Debug, iter};
 
 use advent_of_code::tools::*;
-use itertools::Itertools;
+use itertools::{unfold, Itertools};
 
 /* == Definitions == */
+
+const START: u8 = b'S';
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Connection {
@@ -22,8 +24,8 @@ enum Connection {
     Vertical,
 }
 
-struct Maze {
-    cells: Vec<Connection>,
+struct Maze<'a> {
+    lines: Vec<&'a str>,
     size: UCoords,
     start: UCoords,
 }
@@ -32,9 +34,7 @@ struct Maze {
 
 /// The distance to the farthest cell is half the length of the path.
 pub fn part_one(input: &str) -> Option<u32> {
-    let maze = Maze::parse_input(input);
-    let path = find_path(&maze);
-    Some(path.len() as u32 / 2)
+    Some(Maze::parse_input(input).find_path().count() as u32 / 2)
 }
 
 /// An elegant solution that makes use of the area of the polygon, formed
@@ -49,95 +49,57 @@ pub fn part_one(input: &str) -> Option<u32> {
 /// any loop, as any additional left turns compensate the additional right turns,
 /// and vice versa.
 pub fn part_two(input: &str) -> Option<u32> {
+    let mut length = 0;
+
     let maze = Maze::parse_input(input);
-    let path = find_path(&maze);
-    let area = enclosed_area(&path);
-    Some(area - path.len() as u32 / 2 + 1)
-}
+    let path = maze.find_path().inspect(|_| length += 1);
+    let area = enclosed_area(path);
 
-/// Follows the path of the maze, starting from the start cell.
-/// Returns the path as a vector of coordinates, including the start cell.
-fn find_path(maze: &Maze) -> Vec<UCoords> {
-    let mut path = vec![maze.start];
-
-    let mut cursor = maze.start;
-    let mut last_cursor = None;
-
-    loop {
-        // The connected cells iterator *should* yield two items,
-        // choose the one that we haven't just visited.
-        let next = maze
-            .connected_cells(cursor)
-            .find(|c| Some(*c) != last_cursor)
-            .unwrap();
-
-        if next == maze.start {
-            break;
-        }
-
-        last_cursor = Some(cursor);
-        cursor = next;
-
-        path.push(next);
-    }
-
-    path
+    Some(area - length / 2 + 1)
 }
 
 /* == Implementations == */
 
-impl Maze {
+impl Maze<'_> {
     fn parse_input(input: &str) -> Maze {
-        // Rough estimation of the required capacity (overshoots a little)
-        let mut cells = Vec::with_capacity(input.len());
+        let lines: Vec<_> = input.lines().collect();
+        let size = UCoords::new(lines[0].len(), lines.len());
 
-        let mut height = 0;
-        let mut start = None;
-
-        // Stream the input, constructing the matrix
-        for (i, line) in input.lines().enumerate() {
-            for (j, byte) in line.bytes().enumerate() {
-                if byte == b'S' {
-                    start = Some(UCoords::new(j, i));
-                }
-
-                cells.push(byte.into());
-            }
-
-            height += 1;
-        }
-
-        // The width and height are now known (the maze is square)
-        let width = cells.len() / height;
-        let size = UCoords::new(width, height);
-
-        // The start is guaranteed to be somewhere, once
-        let start = start.unwrap();
-
-        let mut maze = Maze { cells, size, start };
-
-        // Now that we know the position of the starting cell,
-        // we can patch its value to make a continuous path.
-        // Find the two adjacent cells that point to it, and use
-        // the offsets to determine the connection type.
-        let (a, b) = maze
-            .connecting_cells(start)
-            .map(|ucoords| Coords::from(ucoords) - Coords::from(start))
-            .collect_tuple()
+        let start = lines
+            .iter()
+            .enumerate()
+            .find_map(|(y, line)| {
+                line.bytes()
+                    .find_position(|&c| c == START)
+                    .map(|(x, _)| UCoords::new(x, y))
+            })
             .unwrap();
 
-        maze.set(start, Connection::from_offsets(&[a, b]));
-        maze
+        Maze { lines, size, start }
     }
 
-    fn get(&self, coords: UCoords) -> Option<Connection> {
-        let index = coords.y * self.size.x + coords.x;
-        self.cells.get(index).copied()
+    fn get(&self, coords: UCoords) -> Connection {
+        self.lines[coords.y].as_bytes()[coords.x].into()
     }
 
-    fn set(&mut self, coords: UCoords, connection: Connection) {
-        let index = coords.y * self.size.x + coords.x;
-        self.cells[index] = connection;
+    fn find_path(&self) -> impl Iterator<Item = UCoords> + '_ {
+        let last = self.start;
+        let current = self.connecting_cells(self.start).next().unwrap();
+
+        iter::once(last).chain(iter::once(current)).chain(unfold(
+            (last, current),
+            |(last, current)| {
+                let next = self.connected_cells(*current).find(|c| c != last).unwrap();
+
+                if next == self.start {
+                    None
+                } else {
+                    *last = *current;
+                    *current = next;
+                    Some(next)
+                }
+            },
+        ))
     }
 
     /// Returns the cells that are connected to the current cell, based on the symbol
@@ -149,10 +111,9 @@ impl Maze {
         // Iterate over adjacent cells that are connections, compute their connection
         // offsets and find the one that leads back to the current cell.
         self.adjacent_cells(to)
-            .flat_map(|coords| self.get(coords).map(|conn| (coords, conn)))
-            .flat_map(|(ucoords, conn)| {
-                conn.offsets()
-                    .map(|os| os.map(|o| (ucoords, Coords::from(ucoords) + o)))
+            .flat_map(|ucoords| {
+                let offsets = self.get(ucoords).offsets();
+                offsets.map(|os| os.map(|o| (ucoords, Coords::from(ucoords) + o)))
             })
             .flatten()
             .filter(move |(_, connected_cell)| *connected_cell == from_coords)
@@ -161,13 +122,11 @@ impl Maze {
 
     /// Returns the cells that the current cell, based on the symbol of the *current* cell.
     fn connected_cells(&self, at: UCoords) -> impl Iterator<Item = UCoords> + '_ {
-        let from_coords = Coords::from(at);
-
         self.get(at)
+            .offsets()
             .into_iter()
-            .flat_map(|conn| conn.offsets())
+            .map(move |offsets| offsets.map(|o| Coords::from(at) + o))
             .flatten()
-            .map(move |o| from_coords + o)
             .filter_map(|coords| coords.ucoords(&self.size))
     }
 
@@ -184,20 +143,6 @@ impl Maze {
 }
 
 impl Connection {
-    /// Determine the connection type, based on the offsets of the two adjacent cells.
-    fn from_offsets(offsets: &[Coords; 2]) -> Connection {
-        match offsets.iter().sorted().collect_tuple().unwrap() {
-            (Coords { x: -1, y: 0 }, Coords { x: 1, y: 0 }) => Connection::Horizontal,
-            (Coords { x: 0, y: -1 }, Coords { x: 1, y: 0 }) => Connection::NorthEast,
-            (Coords { x: -1, y: 0 }, Coords { x: 0, y: -1 }) => Connection::NorthWest,
-            (Coords { x: 0, y: 1 }, Coords { x: 1, y: 0 }) => Connection::SouthEast,
-            (Coords { x: -1, y: 0 }, Coords { x: 0, y: 1 }) => Connection::SouthWest,
-            (Coords { x: 0, y: -1 }, Coords { x: 0, y: 1 }) => Connection::Vertical,
-            _ => Connection::None,
-        }
-    }
-
-    /// Returns the offsets of a given connection type.
     fn offsets(&self) -> Option<[Coords; 2]> {
         let c = Coords::new;
 
@@ -230,20 +175,19 @@ impl From<u8> for Connection {
 /* == Functions == */
 
 /// Computes the enclosed area of a polygon, given its vertices,
-/// using the shoelace formula.
-fn enclosed_area(path: &[UCoords]) -> u32 {
-    path.iter()
-        .chain(path.iter().take(1))
-        .tuple_windows()
-        .map(|(a, b)| determinant((*a).into(), (*b).into()))
-        .sum::<i64>()
-        .abs() as u32
-        / 2
-}
+/// using the shoelace formula (fast determinant-based version).
+fn enclosed_area(mut path: impl Iterator<Item = UCoords>) -> u32 {
+    let first = path.next().unwrap();
 
-/// Computes the determinant of two 2D column vectors in a matrix.
-fn determinant(a: Coords, b: Coords) -> i64 {
-    a.x * b.y - a.y * b.x
+    let sum: i64 = iter::once(first)
+        .chain(path)
+        .chain(iter::once(first))
+        .map(Coords::from)
+        .tuple_windows()
+        .map(|(a, b)| a.x * b.y - b.x * a.y)
+        .sum();
+
+    sum.abs() as u32 / 2
 }
 
 /* == Tests ==  */
@@ -280,7 +224,7 @@ mod tests {
     fn profile_path_finding(b: &mut test::Bencher) {
         let input = advent_of_code::template::read_file("inputs", DAY);
         let maze = Maze::parse_input(&input);
-        b.iter(|| find_path(&maze));
+        b.iter(|| maze.find_path().next());
     }
 
     #[bench]
@@ -289,5 +233,12 @@ mod tests {
         let maze = Maze::parse_input(&input);
         let cursor = UCoords::new(90, 86);
         b.iter(|| maze.connected_cells(cursor).last());
+    }
+
+    #[bench]
+    fn profile_enclosed_area(b: &mut test::Bencher) {
+        let input = advent_of_code::template::read_file("inputs", DAY);
+        let path: Vec<_> = Maze::parse_input(&input).find_path().collect();
+        b.iter(|| enclosed_area(path.iter().copied()));
     }
 }

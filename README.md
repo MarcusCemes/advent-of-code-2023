@@ -6,25 +6,29 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 
 <div align="center">
 
-|       Day | Name                            | Source       | Part 1 | Part 2 |  Time 1 |  Time 2 |
-| --------: | ------------------------------- | ------------ | :----: | :----: | ------: | ------: |
-|  [1][p01] | Trebuchet?!                     | [01.rs][s01] |   ⭐   |   ⭐   | 33.1 µs | 42.1 µs |
-|  [2][p02] | Cube Conundrum                  | [02.rs][s02] |   ⭐   |   ⭐   | 26.5 µs | 37.2 µs |
-|  [3][p03] | Gear Ratios                     | [03.rs][s03] |   ⭐   |   ⭐   | 39.1 µs | 30.7 µs |
-|  [4][p04] | Scratchcards                    | [04.rs][s04] |   ⭐   |   ⭐   | 82.4 µs | 84.0 µs |
-|  [5][p05] | If You Give A Seed A Fertilizer | [05.rs][s05] |   ⭐   |   ⭐   | 18.7 µs | 23.5 µs |
-|  [6][p06] | Wait For It                     | [06.rs][s06] |   ⭐   |   ⭐   |  174 ns |  180 ns |
-|  [7][p07] | Camel Cards                     | [07.rs][s07] |   ⭐   |   ⭐   |  150 µs |  157 µs |
-|  [8][p08] | Haunted Wasteland               | [08.rs][s08] |   ⭐   |   ⭐   |  389 µs |  2.5 ms |
-|  [9][p09] | Mirage Maintenance              | [09.rs][s09] |   ⭐   |   ⭐   | 99.5 µs | 96.5 µs |
-| [10][p10] | Pipe Maze                       | [10.rs][s10] |   ⭐   |   ⭐   |  293 µs |  315 µs |
-|           | ...                             |              |        |        |         |         |
+|       Day | Name                            | Source       | Part 1 | Part 2 |   Time 1 |  Time 2 |
+| --------: | ------------------------------- | ------------ | :----: | :----: | -------: | ------: |
+|  [1][p01] | Trebuchet?!                     | [01.rs][s01] |   ⭐   |   ⭐   |  33.1 µs | 42.1 µs |
+|  [2][p02] | Cube Conundrum                  | [02.rs][s02] |   ⭐   |   ⭐   |  26.5 µs | 37.2 µs |
+|  [3][p03] | Gear Ratios                     | [03.rs][s03] |   ⭐   |   ⭐   |  39.1 µs | 30.7 µs |
+|  [4][p04] | Scratchcards                    | [04.rs][s04] |   ⭐   |   ⭐   |  82.4 µs | 84.0 µs |
+|  [5][p05] | If You Give A Seed A Fertilizer | [05.rs][s05] |   ⭐   |   ⭐   |  18.7 µs | 23.5 µs |
+|  [6][p06] | Wait For It                     | [06.rs][s06] |   ⭐   |   ⭐   |   174 ns |  180 ns |
+|  [7][p07] | Camel Cards                     | [07.rs][s07] |   ⭐   |   ⭐   |   150 µs |  157 µs |
+|  [8][p08] | Haunted Wasteland               | [08.rs][s08] |   ⭐   |   ⭐   |   389 µs |  2.5 ms |
+|  [9][p09] | Mirage Maintenance              | [09.rs][s09] |   ⭐   |   ⭐   |  99.5 µs | 96.5 µs |
+| [10][p10] | Pipe Maze                       | [10.rs][s10] |   ⭐   |   ⭐   | 87.6 µs¹ | 138 µs¹ |
+|           | ...                             |              |        |        |          |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
 
 _Benchmarked on Intel i7-11800H @ 2.30 GHz (over many samples)._
 
 </div>
+
+<sub>
+<i>¹ I noticed after some refactoring that benchmark times got ~2x slower, with the simpler part taking significantly longer. A ~2x speed increase (relative to initial benchmark) was obtained by only testing one part at a time (with the other commented out for dead-code removal)! This may be an extreme sensitivity to the layout of the linked binary and how this is loaded into the instruction cache? Or bad branch prediction?</i>
+</sub>
 
 ## Acknowledgments
 
