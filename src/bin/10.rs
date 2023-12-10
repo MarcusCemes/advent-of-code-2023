@@ -1,3 +1,7 @@
+#![feature(test)]
+
+extern crate test;
+
 advent_of_code::solution!(10);
 
 use std::fmt::Debug;
@@ -28,7 +32,8 @@ struct Maze {
 
 /// The distance to the farthest cell is half the length of the path.
 pub fn part_one(input: &str) -> Option<u32> {
-    let path = find_path(input);
+    let maze = Maze::parse_input(input);
+    let path = find_path(&maze);
     Some(path.len() as u32 / 2)
 }
 
@@ -44,16 +49,15 @@ pub fn part_one(input: &str) -> Option<u32> {
 /// any loop, as any additional left turns compensate the additional right turns,
 /// and vice versa.
 pub fn part_two(input: &str) -> Option<u32> {
-    let path = find_path(input);
+    let maze = Maze::parse_input(input);
+    let path = find_path(&maze);
     let area = enclosed_area(&path);
     Some(area - path.len() as u32 / 2 + 1)
 }
 
 /// Follows the path of the maze, starting from the start cell.
 /// Returns the path as a vector of coordinates, including the start cell.
-fn find_path(input: &str) -> Vec<UCoords> {
-    let maze = Maze::parse_input(input);
-
+fn find_path(maze: &Maze) -> Vec<UCoords> {
     let mut path = vec![maze.start];
 
     let mut cursor = maze.start;
@@ -264,5 +268,26 @@ mod tests {
     fn test_part_two_b() {
         let result = part_two(&advent_of_code::template::read_part(DAY, 2));
         assert_eq!(result, Some(4));
+    }
+
+    #[bench]
+    fn profile_input_parsing(b: &mut test::Bencher) {
+        let input = advent_of_code::template::read_file("inputs", DAY);
+        b.iter(|| Maze::parse_input(&input));
+    }
+
+    #[bench]
+    fn profile_path_finding(b: &mut test::Bencher) {
+        let input = advent_of_code::template::read_file("inputs", DAY);
+        let maze = Maze::parse_input(&input);
+        b.iter(|| find_path(&maze));
+    }
+
+    #[bench]
+    fn profile_connected_cells(b: &mut test::Bencher) {
+        let input = advent_of_code::template::read_file("inputs", DAY);
+        let maze = Maze::parse_input(&input);
+        let cursor = UCoords::new(90, 86);
+        b.iter(|| maze.connected_cells(cursor).last());
     }
 }
