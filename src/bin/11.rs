@@ -30,9 +30,15 @@ fn solve(input: &str, expansion_coefficient: u64) -> u64 {
 /* == Implementations == */
 
 impl Map {
+    /// Parse the input, collecting information about galaxy locations and empty
+    /// rows and columns in a single pass. The `empty_rows` and `empty_cols` vectors
+    /// have the same size as the input, containing a boolean of whether than row or
+    /// column is empty.
     fn from_str(input: &str) -> Map {
         let row_size = input.lines().next().unwrap().len();
 
+        // Store a vector of booleans indicating whether each column/row is empty.
+        // This provides O(1) lookup using a range, rather than O(log n).
         let mut empty_cols = vec![true; row_size];
         let mut empty_rows = Vec::new();
         let mut galaxies = Vec::new();
@@ -60,6 +66,10 @@ impl Map {
         }
     }
 
+    /// Returns an iterator of distances between all pairs of galaxies using the L1
+    /// norm (Manhattan distance), applying a universe expansion penalty based on the
+    /// provided coefficient (a coefficient of 2 will double the distance of each empty
+    /// row and column between the galaxies).
     fn distances_l1(&self, expansion_coefficient: u64) -> impl Iterator<Item = u64> + '_ {
         self.galaxy_pairs_iter().map(move |(a, b)| {
             let col_span = a.x.min(b.x)..a.x.max(b.x);
@@ -73,6 +83,7 @@ impl Map {
         })
     }
 
+    /// Returns an iterator of all pairs of galaxies.
     fn galaxy_pairs_iter(&self) -> impl Iterator<Item = (UCoords, UCoords)> + '_ {
         self.galaxies
             .iter()
