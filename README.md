@@ -18,6 +18,7 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 |  [8][p08] | Haunted Wasteland               | [08.rs][s08] |   ⭐   |   ⭐   |   389 µs |  2.5 ms |
 |  [9][p09] | Mirage Maintenance              | [09.rs][s09] |   ⭐   |   ⭐   |  99.5 µs | 96.5 µs |
 | [10][p10] | Pipe Maze                       | [10.rs][s10] |   ⭐   |   ⭐   | 87.6 µs¹ | 138 µs¹ |
+| [11][p11] | Cosmic Expansion                | [11.rs][s11] |   ⭐   |   ⭐   |   3.1 ms |  3.1 ms |
 |           | ...                             |              |        |        |          |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
@@ -39,7 +40,7 @@ This repository uses a modified version of [this template][template]. Thanks Fel
 Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 
 [rust-badge]: https://img.shields.io/badge/Rust-d55826?logo=rust&style=for-the-badge
-[solutions-badge]: https://img.shields.io/badge/solutions-20/50-brightgreen?logo=star&style=for-the-badge
+[solutions-badge]: https://img.shields.io/badge/solutions-22/50-brightgreen?logo=star&style=for-the-badge
 [advent-of-code]: https://adventofcode.com/
 [rust]: https://www.rust-lang.org/
 [template]: https://github.com/fspoettel/advent-of-code-rust
@@ -53,6 +54,7 @@ Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 [p08]: https://adventofcode.com/2023/day/8
 [p09]: https://adventofcode.com/2023/day/9
 [p10]: https://adventofcode.com/2023/day/10
+[p11]: https://adventofcode.com/2023/day/11
 [s01]: src/bin/01.rs
 [s02]: src/bin/02.rs
 [s03]: src/bin/03.rs
@@ -63,3 +65,4 @@ Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 [s08]: src/bin/08.rs
 [s09]: src/bin/09.rs
 [s10]: src/bin/10.rs
+[s11]: src/bin/11.rs

@@ -132,7 +132,10 @@ impl Schematic<'_> {
     fn horizontally_adjacent_parts(&self, at: Coords) -> [Option<Part>; 2] {
         match self.part_at(at) {
             Some(part) => [Some(part), None],
-            None => [self.part_at(at.left()), self.part_at(at.right())],
+            None => [
+                self.part_at(at + (-1, 0).into()),
+                self.part_at(at + (1, 0).into()),
+            ],
         }
     }
 

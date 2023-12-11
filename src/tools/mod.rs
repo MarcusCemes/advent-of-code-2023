@@ -20,32 +20,8 @@ impl Coords {
         Coords { x, y }
     }
 
-    pub fn left(&self) -> Coords {
-        Coords {
-            x: self.x - 1,
-            y: self.y,
-        }
-    }
-
-    pub fn right(&self) -> Coords {
-        Coords {
-            x: self.x + 1,
-            y: self.y,
-        }
-    }
-
-    pub fn up(&self) -> Coords {
-        Coords {
-            x: self.x,
-            y: self.y - 1,
-        }
-    }
-
-    pub fn down(&self) -> Coords {
-        Coords {
-            x: self.x,
-            y: self.y + 1,
-        }
+    pub fn norm_l1(&self) -> u64 {
+        self.x.abs() as u64 + self.y.abs() as u64
     }
 
     pub fn ucoords(&self, bounds: &UCoords) -> Option<UCoords> {
