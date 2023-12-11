@@ -10,37 +10,27 @@ pub const ANSI_ITALIC: &str = "\x1b[3m";
 pub const ANSI_BOLD: &str = "\x1b[1m";
 pub const ANSI_RESET: &str = "\x1b[0m";
 
-/// Helper function that reads a text file to a string.
 #[must_use]
-pub fn read_file(folder: &str, day: Day) -> String {
+pub fn read_data(folder: &str, name: &str) -> String {
     let cwd = env::current_dir().unwrap();
-    let filepath = cwd.join("data").join(folder).join(format!("{day}.txt"));
+    let filepath = cwd.join("data").join(folder).join(format!("{name}.txt"));
     let f = fs::read_to_string(filepath);
-    f.expect("could not open input file")
+    f.expect("could not open data")
 }
 
 #[must_use]
-pub fn read_part(day: Day, part: u32) -> String {
-    let cwd = env::current_dir().unwrap();
-    let filepath = cwd
-        .join("data")
-        .join("examples")
-        .join(format!("{day}-{part}.txt"));
-
-    let f = fs::read_to_string(filepath);
-    f.expect("could not open input file")
+pub fn read_input(day: Day) -> String {
+    read_data("inputs", &day.to_string())
 }
 
 #[must_use]
-pub fn read_case(day: Day, case: u32) -> String {
-    let cwd = env::current_dir().unwrap();
-    let filepath = cwd
-        .join("data")
-        .join("examples")
-        .join(format!("{day}-{case}.txt"));
+pub fn read_example(day: Day) -> String {
+    read_data("examples", &day.to_string())
+}
 
-    let f = fs::read_to_string(filepath);
-    f.expect("could not open input file")
+#[must_use]
+pub fn read_example_part(day: Day, case: u32) -> String {
+    read_data("examples", &format!("{day}-{case}"))
 }
 
 /// Creates the constant `DAY` and sets up the input and runner for each part.
@@ -52,7 +42,7 @@ macro_rules! solution {
 
         fn main() {
             use advent_of_code::template::runner::*;
-            let input = advent_of_code::template::read_file("inputs", DAY);
+            let input = advent_of_code::template::read_input(DAY);
             run_part(part_one, &input, DAY, 1);
             run_part(part_two, &input, DAY, 2);
         }

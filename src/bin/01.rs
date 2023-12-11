@@ -39,16 +39,17 @@ fn compare_slice(slice: &str) -> Option<u32> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use advent_of_code::template::*;
 
     #[test]
     fn test_part_one() {
-        let result = part_one(&advent_of_code::template::read_part(DAY, 1));
+        let result = part_one(&read_example_part(DAY, 1));
         assert_eq!(result, Some(142));
     }
 
     #[test]
     fn test_part_two() {
-        let result = part_two(&advent_of_code::template::read_part(DAY, 2));
+        let result = part_two(&read_example_part(DAY, 2));
         assert_eq!(result, Some(281));
     }
 }

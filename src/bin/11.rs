@@ -98,22 +98,23 @@ impl Map {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use advent_of_code::template::*;
 
     #[test]
     fn test_part_one() {
-        let result = part_one(&advent_of_code::template::read_file("examples", DAY));
+        let result = part_one(&read_example(DAY));
         assert_eq!(result, Some(374));
     }
 
     #[test]
     fn test_expansion_10() {
-        let input = &advent_of_code::template::read_file("examples", DAY);
+        let input = &read_example(DAY);
         assert_eq!(solve(input, 10), 1030);
     }
 
     #[test]
     fn test_expansion_100() {
-        let input = &advent_of_code::template::read_file("examples", DAY);
+        let input = &read_example(DAY);
         assert_eq!(solve(input, 100), 8410);
     }
 }

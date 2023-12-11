@@ -161,28 +161,29 @@ fn card_score(card: u8, game_type: GameType) -> u8 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use advent_of_code::template::*;
 
     #[test]
     fn test_part_one_1() {
-        let result = part_one(&advent_of_code::template::read_part(DAY, 1));
+        let result = part_one(&read_example_part(DAY, 1));
         assert_eq!(result, Some(6440));
     }
 
     #[test]
     fn test_part_one_2() {
-        let result = part_one(&advent_of_code::template::read_part(DAY, 2));
+        let result = part_one(&read_example_part(DAY, 2));
         assert_eq!(result, Some(4466));
     }
 
     #[test]
     fn test_part_two_1() {
-        let result = part_two(&advent_of_code::template::read_part(DAY, 1));
+        let result = part_two(&read_example_part(DAY, 1));
         assert_eq!(result, Some(5905));
     }
 
     #[test]
     fn test_part_two_2() {
-        let result = part_two(&advent_of_code::template::read_part(DAY, 2));
+        let result = part_two(&read_example_part(DAY, 2));
         assert_eq!(result, Some(4657));
     }
 

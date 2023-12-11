@@ -195,41 +195,42 @@ fn enclosed_area(mut path: impl Iterator<Item = UCoords>) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use advent_of_code::template::*;
 
     #[test]
     fn test_part_one() {
-        let result = part_one(&advent_of_code::template::read_part(DAY, 1));
+        let result = part_one(&read_example_part(DAY, 1));
         assert_eq!(result, Some(8));
     }
 
     #[test]
     fn test_part_two_a() {
-        let result = part_two(&advent_of_code::template::read_part(DAY, 1));
+        let result = part_two(&read_example_part(DAY, 1));
         assert_eq!(result, Some(1));
     }
 
     #[test]
     fn test_part_two_b() {
-        let result = part_two(&advent_of_code::template::read_part(DAY, 2));
+        let result = part_two(&read_example_part(DAY, 2));
         assert_eq!(result, Some(4));
     }
 
     #[bench]
     fn profile_input_parsing(b: &mut test::Bencher) {
-        let input = advent_of_code::template::read_file("inputs", DAY);
+        let input = read_input(DAY);
         b.iter(|| Maze::parse_input(&input));
     }
 
     #[bench]
     fn profile_path_finding(b: &mut test::Bencher) {
-        let input = advent_of_code::template::read_file("inputs", DAY);
+        let input = read_input(DAY);
         let maze = Maze::parse_input(&input);
         b.iter(|| maze.find_path().next());
     }
 
     #[bench]
     fn profile_connected_cells(b: &mut test::Bencher) {
-        let input = advent_of_code::template::read_file("inputs", DAY);
+        let input = read_input(DAY);
         let maze = Maze::parse_input(&input);
         let cursor = UCoords::new(90, 86);
         b.iter(|| maze.connected_cells(cursor).last());
@@ -237,7 +238,7 @@ mod tests {
 
     #[bench]
     fn profile_enclosed_area(b: &mut test::Bencher) {
-        let input = advent_of_code::template::read_file("inputs", DAY);
+        let input = read_input(DAY);
         let path: Vec<_> = Maze::parse_input(&input).find_path().collect();
         b.iter(|| enclosed_area(path.iter().copied()));
     }

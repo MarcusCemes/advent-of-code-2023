@@ -265,40 +265,41 @@ impl Display for Schematic<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use advent_of_code::template::*;
 
     #[test]
     fn test_part_one_a() {
-        let result = part_one(&advent_of_code::template::read_case(DAY, 1));
+        let result = part_one(&read_example_part(DAY, 1));
         assert_eq!(result, Some(4361));
     }
 
     #[test]
     fn test_part_one_b() {
-        let result = part_one(&advent_of_code::template::read_case(DAY, 2));
+        let result = part_one(&read_example_part(DAY, 2));
         assert_eq!(result, Some(413));
     }
 
     #[test]
     fn test_part_one_c() {
-        let result = part_one(&advent_of_code::template::read_case(DAY, 3));
+        let result = part_one(&read_example_part(DAY, 3));
         assert_eq!(result, Some(925));
     }
 
     #[test]
     fn test_part_one_d() {
-        let result = part_one(&advent_of_code::template::read_case(DAY, 4));
+        let result = part_one(&read_example_part(DAY, 4));
         assert_eq!(result, Some(40));
     }
 
     #[test]
     fn test_part_two_a() {
-        let result = part_two(&advent_of_code::template::read_case(DAY, 1));
+        let result = part_two(&read_example_part(DAY, 1));
         assert_eq!(result, Some(467835));
     }
 
     #[test]
     fn test_part_two_b() {
-        let result = part_two(&advent_of_code::template::read_case(DAY, 4));
+        let result = part_two(&read_example_part(DAY, 4));
         assert_eq!(result, Some(442));
     }
 }
