@@ -6,13 +6,14 @@ use itertools::Itertools;
 
 /* == Definitions == */
 
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 enum Spring {
     Working,
     Broken,
     Unknown,
 }
 
+#[derive(Clone, Copy)]
 struct Branch {
     group: u8,
     length: u8,
@@ -105,65 +106,24 @@ fn valid_spring_arrangement_count(springs: &[Spring], groups: &[u8]) -> u64 {
     let spring_it = springs.iter().chain(once(&Spring::Working));
 
     for spring in spring_it {
-        for branch in &previous_branches {
-            match spring {
-                // In the case that it's a broken spring...
-                Spring::Broken => {
-                    if branch.group as usize != groups.len()
-                        && branch.length < groups[branch.group as usize]
-                    {
-                        // ...and it's not the expected length, extend it
-                        current_branches.push(Branch {
-                            length: branch.length + 1,
-                            ..*branch
-                        })
-                    }
+        match spring {
+            Spring::Broken => {
+                for branch in &previous_branches {
+                    current_branches.extend(branch.derive_broken(groups))
                 }
+            }
 
-                // In the case that...
-                Spring::Unknown => {
-                    // ...the spring is broken...
-                    if branch.group as usize != groups.len()
-                        && branch.length < groups[branch.group as usize]
-                    {
-                        // ...and it's not the expected length, extend it
-                        current_branches.push(Branch {
-                            length: branch.length + 1,
-                            ..*branch
-                        })
-                    }
-
-                    // ...but may also be working...
-                    if branch.length == 0 {
-                        // ...and the previous was working, just keep going
-                        current_branches.push(Branch { ..*branch });
-                    } else {
-                        // ...and the previous was broken, terminate it and advance group
-                        if branch.length == groups[branch.group as usize] {
-                            current_branches.push(Branch {
-                                group: branch.group + 1,
-                                length: 0,
-                                ..*branch
-                            });
-                        }
-                    }
+            Spring::Working => {
+                for branch in &previous_branches {
+                    current_branches.extend(branch.derive_working(groups))
                 }
+            }
 
-                // In the case that it's a working spring...
-                Spring::Working => {
-                    if branch.length == 0 {
-                        // ...and the previous was working, just keep going
-                        current_branches.push(Branch { ..*branch });
-                    } else {
-                        // ...and the previous was broken, terminate it  and advance group
-                        if branch.length == groups[branch.group as usize] {
-                            current_branches.push(Branch {
-                                group: branch.group + 1,
-                                length: 0,
-                                ..*branch
-                            });
-                        }
-                    }
+            // Unknown springs can split the decision tree into two branches
+            Spring::Unknown => {
+                for branch in &previous_branches {
+                    current_branches.extend(branch.derive_broken(groups));
+                    current_branches.extend(branch.derive_working(groups));
                 }
             }
         }
@@ -171,22 +131,60 @@ fn valid_spring_arrangement_count(springs: &[Spring], groups: &[u8]) -> u64 {
         regroup_branches(&mut previous_branches, &mut current_branches);
     }
 
-    // Valid arrangements are those that have found all groups
     previous_branches
         .iter()
-        .filter(|b| b.group as usize == groups.len())
+        .filter(|b| b.is_complete(groups))
         .map(|b| b.permutations)
         .sum()
 }
 
-/// To avoid redundant computation, branches are regrouped at the end of each
-/// stage on the condition that they have the same amount and group counters.
+impl Branch {
+    /// Derive a new branch from the current one for a working spring.
+    fn derive_working(&self, groups: &[u8]) -> Option<Branch> {
+        match self.length {
+            // No-op for consecutive working springs
+            0 => Some(*self),
+
+            // If the previous broken spring completed a group, increment
+            // the group counter and reset the length counter.
+            _ if self.length == groups[self.group as usize] => Some(Branch {
+                group: self.group + 1,
+                length: 0,
+                ..*self
+            }),
+
+            // Otherwise, a constraint was violated and the branch is invalid
+            _ => None,
+        }
+    }
+
+    /// Derive a new branch from the current one for a broken spring.
+    fn derive_broken(&self, groups: &[u8]) -> Option<Branch> {
+        match groups.get(self.group as usize) {
+            // If the spring is not yet complete, increment the length counter
+            Some(group) if self.length < *group => Some(Branch {
+                length: self.length + 1,
+                ..*self
+            }),
+
+            // Length exceeds group constraint, or no more broken springs were,
+            // allowed, so the branch is invalid
+            _ => None,
+        }
+    }
+
+    /// Complete branches are those that have found all groups
+    fn is_complete(&self, groups: &[u8]) -> bool {
+        self.group as usize == groups.len()
+    }
+}
+
+/// Regroup branches that have the same `group` and `length` into a single branch,
+/// summing their permutations. This is done by an in-place sort and a single pass
+/// using `group_by()`.
 ///
-/// This is done by an in-place sort and a single pass using `group_by()`, summing
-/// the permutations into a single new branch.
-///
-/// All new branches are then stored in the previous buffer (which is cleared),
-/// and the current buffer is cleared for the next iteration.
+/// Both buffers are cleared, and the regrouped branches are appended to the
+/// previous buffer.
 fn regroup_branches(previous: &mut Vec<Branch>, current: &mut Vec<Branch>) {
     previous.truncate(0);
     current.sort_unstable_by_key(|b| (b.group, b.length));
