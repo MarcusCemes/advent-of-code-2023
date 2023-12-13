@@ -47,7 +47,7 @@ fn solve(input: &str, scale: usize) -> u64 {
 /// interspersed with an unknown spring.
 fn parse_line(line: &str, scale: usize) -> (Vec<Spring>, Vec<u8>) {
     let (spring_str, count_str) = line.split_once(' ').unwrap();
-    let spring_it = spring_str.bytes().map(|b| Spring::from(b));
+    let spring_it = spring_str.bytes().map(Spring::from);
     let count_it = count_str.split(',').map(|s| s.parse().unwrap());
 
     let mut springs = Vec::from_iter(spring_it);

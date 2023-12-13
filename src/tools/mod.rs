@@ -21,7 +21,7 @@ impl Coords {
     }
 
     pub fn norm_l1(&self) -> u64 {
-        self.x.abs() as u64 + self.y.abs() as u64
+        self.x.unsigned_abs() + self.y.unsigned_abs()
     }
 
     pub fn ucoords(&self, bounds: &UCoords) -> Option<UCoords> {

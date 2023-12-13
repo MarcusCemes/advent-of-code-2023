@@ -125,8 +125,7 @@ impl Maze<'_> {
         self.get(at)
             .offsets()
             .into_iter()
-            .map(move |offsets| offsets.map(|o| Coords::from(at) + o))
-            .flatten()
+            .flat_map(move |offsets| offsets.map(|o| Coords::from(at) + o))
             .filter_map(|coords| coords.ucoords(&self.size))
     }
 
@@ -187,7 +186,7 @@ fn enclosed_area(mut path: impl Iterator<Item = UCoords>) -> u32 {
         .map(|(a, b)| a.x * b.y - b.x * a.y)
         .sum();
 
-    sum.abs() as u32 / 2
+    sum.unsigned_abs() as u32 / 2
 }
 
 /* == Tests ==  */
