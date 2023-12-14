@@ -1,6 +1,6 @@
 use std::{
     fmt::Display,
-    ops::{Add, Sub},
+    ops::{Add, AddAssign, Sub},
 };
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
@@ -39,6 +39,12 @@ impl Add for Coords {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
         }
+    }
+}
+
+impl AddAssign for Coords {
+    fn add_assign(&mut self, rhs: Coords) {
+        *self = *self + rhs;
     }
 }
 
