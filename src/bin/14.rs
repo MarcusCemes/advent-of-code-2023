@@ -1,6 +1,9 @@
 advent_of_code::solution!(14);
 
-use std::hash::{DefaultHasher, Hash, Hasher};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    hash::{DefaultHasher, Hash, Hasher},
+};
 
 use advent_of_code::tools::{Coords, UCoords};
 
@@ -38,7 +41,7 @@ pub fn part_one(input: &str) -> Option<u64> {
 pub fn part_two(input: &str) -> Option<u64> {
     let mut platform = Platform::parse_str(input);
 
-    let mut history = Vec::new();
+    let mut hashes = BTreeMap::new();
     let mut load = 0;
 
     // Keep spinning the cycle and saving the load
@@ -47,15 +50,23 @@ pub fn part_two(input: &str) -> Option<u64> {
         let hash = platform.hash();
 
         // Thankfully, a cycle is always found before the end...
-        match history.iter().enumerate().find(|(_, (h, _))| *h == hash) {
+        // match history.iter().enumerate().find(|(_, (h, _))| *h == hash) {
+        match hashes.get(&hash) {
             None => {
-                history.push((hash, platform.north_beam_load()));
+                hashes.insert(hash, (i, platform.north_beam_load()));
             }
 
             Some((j, _)) => {
                 // Compute the expected load after SPIN_CYCLES by exploiting
                 // the cyclic nature and the saved loads after each cycle.
-                (_, load) = history[j - 1 + (SPIN_CYCLES - i) % (i - j)];
+                let index = j - 1 + (SPIN_CYCLES - i) % (i - j);
+
+                load = *hashes
+                    .values()
+                    .find(|(i, _)| *i == index)
+                    .map(|(_, l)| l)
+                    .unwrap();
+
                 break;
             }
         }

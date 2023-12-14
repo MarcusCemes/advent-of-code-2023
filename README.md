@@ -21,7 +21,7 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 | [11][p11] | Cosmic Expansion                | [11.rs][s11] |   ⭐   |   ⭐   |   3.1 ms |  3.1 ms |
 | [12][p12] | Hot Springs                     | [12.rs][s12] |   ⭐   |   ⭐   |   1.7 ms | 21.3 ms |
 | [13][p13] | Point of Incidence              | [13.rs][s13] |   ⭐   |   ⭐   |  46.0 µs | 48.5 µs |
-| [14][p14] | Parabolic Reflector Dish        | [14.rs][s14] |   ⭐   |   ⭐   |  60.7 µs | 27.7 ms |
+| [14][p14] | Parabolic Reflector Dish        | [14.rs][s14] |   ⭐   |   ⭐   |  48.8 µs | 25.6 ms |
 |           | ...                             |              |        |        |          |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
