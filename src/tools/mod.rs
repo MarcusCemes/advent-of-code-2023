@@ -3,13 +3,13 @@ use std::{
     ops::{Add, AddAssign, Sub},
 };
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Coords {
     pub x: i64,
     pub y: i64,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct UCoords {
     pub x: usize,
     pub y: usize,
@@ -74,6 +74,12 @@ impl From<(i64, i64)> for Coords {
 impl UCoords {
     pub fn new(x: usize, y: usize) -> UCoords {
         UCoords { x, y }
+    }
+}
+
+impl From<(usize, usize)> for UCoords {
+    fn from(val: (usize, usize)) -> UCoords {
+        UCoords { x: val.0, y: val.1 }
     }
 }
 

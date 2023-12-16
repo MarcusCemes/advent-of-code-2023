@@ -121,11 +121,8 @@ impl LensBox {
 
     /// Removes a lens from a table.
     fn remove_lens(&mut self, atom: &Atom) {
-        match self.lenses.iter().find_position(|l| l.atom == *atom) {
-            Some((i, _)) => {
-                self.lenses.remove(i);
-            }
-            None => (),
+        if let Some((i, _)) = self.lenses.iter().find_position(|l| l.atom == *atom) {
+            self.lenses.remove(i);
         }
     }
 

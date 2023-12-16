@@ -1,7 +1,7 @@
 advent_of_code::solution!(14);
 
 use std::{
-    collections::{BTreeMap, BTreeSet},
+    collections::BTreeMap,
     hash::{DefaultHasher, Hash, Hasher},
 };
 
