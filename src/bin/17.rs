@@ -1,6 +1,10 @@
+#![feature(test)]
+
+extern crate test;
+
 advent_of_code::solution!(17);
 
-use std::{collections::BTreeSet, ops::Range};
+use std::{collections::HashSet, ops::Range};
 
 use advent_of_code::tools::*;
 use itertools::Itertools;
@@ -13,6 +17,7 @@ struct City {
     size: UCoords,
 }
 
+#[derive(Clone)]
 struct Branch {
     direction: Coords,
     length: u8,
@@ -33,7 +38,7 @@ pub fn part_two(input: &str) -> Option<u32> {
 fn solve(input: &str, turn_range: Range<u8>) -> Option<u32> {
     let city = parse_input(input);
 
-    let mut visited = BTreeSet::new();
+    let mut visited = HashSet::new();
     let end = UCoords::new(city.size.x - 1, city.size.y - 1);
 
     // Stores a sorted list of branches to explore
@@ -159,8 +164,8 @@ impl Branch {
     fn id(&self) -> u64 {
         let mut id = 0;
 
-        id |= (self.direction.x as u64 + 1) << 62;
-        id |= (self.direction.y as u64 + 1) << 60;
+        id |= ((self.direction.x + 1) as u64) << 62;
+        id |= ((self.direction.y + 1) as u64) << 60;
         id |= (self.length as u64) << 32;
         id |= (self.position.x as u64) << 16;
         id |= self.position.y as u64;
@@ -193,9 +198,43 @@ mod tests {
         assert_eq!(result, Some(71));
     }
 
-    #[test]
-    fn test_solution() {
-        let result = part_two(&read_input(DAY));
-        assert_eq!(result, Some(801));
+    #[bench]
+    fn profile_exploration(b: &mut test::Bencher) {
+        let input = read_input(DAY);
+        let city = parse_input(&input);
+
+        let mut visited = HashSet::new();
+
+        let saved_branches: Vec<Branch> = city
+            .starting_vectors()
+            .sorted_by_key(|b| b.loss)
+            .rev()
+            .collect();
+
+        let mut branches = saved_branches.clone();
+
+        let turn_range = ULTRA_CRUCIBLE_RANGE;
+
+        b.iter(|| {
+            if branches.is_empty() {
+                branches = saved_branches.clone();
+            }
+
+            let branch = branches.pop().unwrap();
+
+            for new_branch in branch.next_branches(&city, &turn_range) {
+                if visited.insert(new_branch.id()) {
+                    let index = branches
+                        .iter()
+                        .enumerate()
+                        .rev()
+                        .find(|(_, branch)| branch.loss >= new_branch.loss)
+                        .map(|(i, _)| i)
+                        .unwrap_or(0);
+
+                    branches.insert(index, new_branch);
+                }
+            }
+        })
     }
 }

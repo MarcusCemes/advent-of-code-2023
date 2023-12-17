@@ -1,6 +1,6 @@
 advent_of_code::solution!(15);
 
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 use itertools::Itertools;
 
@@ -33,7 +33,7 @@ enum Operation {
 /// Lookup table for atoms associated with string labels.
 struct AtomTable<'a> {
     counter: u32,
-    labels: BTreeMap<&'a str, Atom>,
+    labels: HashMap<&'a str, Atom>,
 }
 
 /// Represents a string label as a unique integer instead, with the
@@ -140,7 +140,7 @@ impl<'a> AtomTable<'a> {
     fn new() -> AtomTable<'a> {
         AtomTable {
             counter: 0,
-            labels: BTreeMap::new(),
+            labels: HashMap::new(),
         }
     }
 

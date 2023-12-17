@@ -1,7 +1,7 @@
 advent_of_code::solution!(16);
 
 use std::{
-    collections::BTreeSet,
+    collections::HashSet,
     hash::{DefaultHasher, Hash, Hasher},
     mem,
 };
@@ -69,7 +69,7 @@ pub fn part_two(input: &str) -> Option<u32> {
 }
 
 fn solve_beam(map: &mut Map, beam: Beam) -> u32 {
-    let mut cache = BTreeSet::<u64>::new();
+    let mut cache = HashSet::new();
 
     let mut beams = vec![beam];
 

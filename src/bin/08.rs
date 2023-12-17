@@ -1,6 +1,6 @@
 advent_of_code::solution!(8);
 
-use std::{collections::BTreeMap, mem};
+use std::{collections::HashMap, mem};
 
 /* == Definitions == */
 
@@ -15,10 +15,10 @@ enum Cmd {
 
 struct Map<'a> {
     directions: &'a str,
-    nodes: BTreeMap<NodeId, Directions>,
+    nodes: HashMap<NodeId, Directions>,
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 struct NodeId(u32);
 
 struct Directions {
@@ -71,7 +71,7 @@ impl Map<'_> {
         Map { directions, nodes }
     }
 
-    fn parse_lines<'a>(lines: impl Iterator<Item = &'a str>) -> BTreeMap<NodeId, Directions> {
+    fn parse_lines<'a>(lines: impl Iterator<Item = &'a str>) -> HashMap<NodeId, Directions> {
         lines
             .flat_map(|line| {
                 let (id_str, rest) = line.split_once(" = ")?;

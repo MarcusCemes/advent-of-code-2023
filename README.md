@@ -15,16 +15,16 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 |  [5][p05] | If You Give A Seed A Fertilizer | [05.rs][s05] |   ⭐   |   ⭐   |  18.7 µs | 23.5 µs |
 |  [6][p06] | Wait For It                     | [06.rs][s06] |   ⭐   |   ⭐   |   174 ns |  180 ns |
 |  [7][p07] | Camel Cards                     | [07.rs][s07] |   ⭐   |   ⭐   |   150 µs |  157 µs |
-|  [8][p08] | Haunted Wasteland               | [08.rs][s08] |   ⭐   |   ⭐   |   389 µs |  2.5 ms |
+|  [8][p08] | Haunted Wasteland               | [08.rs][s08] |   ⭐   |   ⭐   |   193 µs |  1.2 ms |
 |  [9][p09] | Mirage Maintenance              | [09.rs][s09] |   ⭐   |   ⭐   |  99.5 µs | 96.5 µs |
 | [10][p10] | Pipe Maze                       | [10.rs][s10] |   ⭐   |   ⭐   | 87.6 µs¹ | 138 µs¹ |
 | [11][p11] | Cosmic Expansion                | [11.rs][s11] |   ⭐   |   ⭐   |   3.1 ms |  3.1 ms |
 | [12][p12] | Hot Springs                     | [12.rs][s12] |   ⭐   |   ⭐   |   1.7 ms | 21.3 ms |
 | [13][p13] | Point of Incidence              | [13.rs][s13] |   ⭐   |   ⭐   |  46.0 µs | 48.5 µs |
 | [14][p14] | Parabolic Reflector Dish        | [14.rs][s14] |   ⭐   |   ⭐   |  48.8 µs | 25.6 ms |
-| [15][p15] | Lens Library                    | [15.rs][s15] |   ⭐   |   ⭐   |  40.9 µs |  469 µs |
-| [16][p16] | The Floor Will Be Lava          | [16.rs][s16] |   ⭐   |   ⭐   |   1.3 ms |  348 ms |
-| [17][p17] | Clumsy Crucible                 | [17.rs][s17] |   ⭐   |   ⭐   |   288 ms |   2.7 s |
+| [15][p15] | Lens Library                    | [15.rs][s15] |   ⭐   |   ⭐   |  54.8 µs |  266 µs |
+| [16][p16] | The Floor Will Be Lava          | [16.rs][s16] |   ⭐   |   ⭐   |   664 µs |  162 ms |
+| [17][p17] | Clumsy Crucible                 | [17.rs][s17] |   ⭐   |   ⭐   |   267 ms |   2.6 s |
 |           | ...                             |              |        |        |          |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
