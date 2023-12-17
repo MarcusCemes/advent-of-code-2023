@@ -1,14 +1,12 @@
-#![feature(test)]
-
-extern crate test;
-
 advent_of_code::solution!(17);
 
-use std::{collections::HashSet, ops::Range};
+use std::{cmp::Ordering, collections::BinaryHeap, ops::Range};
 
 use advent_of_code::tools::*;
-use itertools::Itertools;
 
+/* == Definitions == */
+
+const DIRECTIONS: usize = 4;
 const CRUCIBLE_RANGE: Range<u8> = 0..4;
 const ULTRA_CRUCIBLE_RANGE: Range<u8> = 4..11;
 
@@ -17,6 +15,8 @@ struct City {
     size: UCoords,
 }
 
+/// A branch is a possible path through the city, with a position, direction
+/// and length. The loss is the amount of heat lost following this path.
 #[derive(Clone)]
 struct Branch {
     direction: Coords,
@@ -24,6 +24,16 @@ struct Branch {
     loss: u32,
     position: UCoords,
 }
+
+/// Fast storage of visited branch states in a linear array. Uses a 16
+/// bit integer storing each possible length good cache locality.
+/// The maximum crucible length is therefore 15.
+struct VisitationMatrix {
+    map: Vec<u16>,
+    step: usize,
+}
+
+/* == Solutions == */
 
 pub fn part_one(input: &str) -> Option<u32> {
     solve(input, CRUCIBLE_RANGE)
@@ -37,18 +47,12 @@ pub fn part_two(input: &str) -> Option<u32> {
 /// similar to the dynamic programming approach used in Day 12.
 fn solve(input: &str, turn_range: Range<u8>) -> Option<u32> {
     let city = parse_input(input);
-
-    let mut visited = HashSet::new();
     let end = UCoords::new(city.size.x - 1, city.size.y - 1);
 
-    // Stores a sorted list of branches to explore
-    let mut branches: Vec<Branch> = city
-        .starting_vectors()
-        .sorted_by_key(|b| b.loss)
-        .rev()
-        .collect();
+    let mut visit_map = VisitationMatrix::new(&city.size);
+    let mut heap = BinaryHeap::from_iter(city.starting_vectors());
 
-    while let Some(branch) = branches.pop() {
+    while let Some(branch) = heap.pop() {
         for new_branch in branch.next_branches(&city, &turn_range) {
             if new_branch.position == end {
                 if new_branch.length >= turn_range.start {
@@ -58,23 +62,20 @@ fn solve(input: &str, turn_range: Range<u8>) -> Option<u32> {
                 continue;
             }
 
-            // If the branch hasn't been visited, insert it in the right place
-            if visited.insert(new_branch.id()) {
-                let index = branches
-                    .iter()
-                    .enumerate()
-                    .rev()
-                    .find(|(_, branch)| branch.loss >= new_branch.loss)
-                    .map(|(i, _)| i)
-                    .unwrap_or(0);
-
-                branches.insert(index, new_branch);
+            if visit_map.visit(
+                &new_branch.position,
+                &new_branch.direction,
+                new_branch.length,
+            ) {
+                heap.push(new_branch);
             }
         }
     }
 
     panic!("No solution found!");
 }
+
+/* == Input parsing == */
 
 fn parse_input(input: &str) -> City {
     let mut height = 0;
@@ -88,6 +89,8 @@ fn parse_input(input: &str) -> City {
     let size = UCoords::new(blocks.len() / height, height);
     City { blocks, size }
 }
+
+/* == Implementations == */
 
 impl City {
     fn get(&self, coords: &UCoords) -> Option<u8> {
@@ -117,62 +120,88 @@ impl Branch {
         city: &'a City,
         turn_range: &Range<u8>,
     ) -> impl Iterator<Item = Branch> + 'a {
-        let straight_branch =
-            (self.length + 1 < turn_range.end)
-                .then_some(())
-                .and_then(|_| unsafe {
-                    let position = self.next_position(self.direction, city)?;
-                    let loss = self.loss + city.get(&position).unwrap_unchecked() as u32;
-
-                    Some(Branch {
-                        length: self.length + 1,
-                        direction: self.direction,
-                        position,
-                        loss,
-                    })
-                });
-
         let Coords { x, y } = self.direction;
+
+        let straight_branch = (self.length + 1 < turn_range.end)
+            .then_some(())
+            .map(|_| (self.length + 1, self.direction));
 
         let lateral_branches = (self.length >= turn_range.start)
             .then_some(())
             .into_iter()
-            .flat_map(move |_| unsafe {
-                [Coords::new(y, x), Coords::new(-y, -x)]
-                    .into_iter()
-                    .flat_map(|offset| {
-                        let position = self.next_position(offset, city)?;
-                        let loss = self.loss + city.get(&position).unwrap_unchecked() as u32;
+            .flat_map(move |_| [(y, x), (-y, -x)].map(|(x, y)| (1, Coords::new(x, y))));
 
-                        Some(Branch {
-                            length: 1,
-                            direction: offset,
-                            position,
-                            loss,
-                        })
-                    })
-            });
+        lateral_branches
+            .chain(straight_branch)
+            .flat_map(|(length, direction)| unsafe {
+                let position = (direction + self.position.into()).ucoords(&city.size)?;
+                let loss = self.loss + city.get(&position).unwrap_unchecked() as u32;
 
-        lateral_branches.into_iter().chain(straight_branch)
-    }
-
-    fn next_position(&self, offset: Coords, city: &City) -> Option<UCoords> {
-        (Coords::from(self.position) + offset).ucoords(&city.size)
-    }
-
-    /// Fits all useful information to identify the branch in a single u64.
-    fn id(&self) -> u64 {
-        let mut id = 0;
-
-        id |= ((self.direction.x + 1) as u64) << 62;
-        id |= ((self.direction.y + 1) as u64) << 60;
-        id |= (self.length as u64) << 32;
-        id |= (self.position.x as u64) << 16;
-        id |= self.position.y as u64;
-
-        id
+                Some(Branch {
+                    length,
+                    direction,
+                    position,
+                    loss,
+                })
+            })
     }
 }
+
+impl VisitationMatrix {
+    fn new(size: &UCoords) -> Self {
+        Self {
+            map: vec![0; size.x * size.y * DIRECTIONS],
+            step: size.x,
+        }
+    }
+
+    fn visit(&mut self, at: &UCoords, direction: &Coords, length: u8) -> bool {
+        debug_assert!(length < 16);
+
+        let index = at.y * 4 * self.step + at.x * 4 + direction_id(direction);
+
+        // Fetch the bit, set it and return whether it was not set before
+        let mask = 1 << length;
+        let bits = self.map[index];
+        self.map[index] = bits | mask;
+
+        (bits & mask) == 0
+    }
+}
+
+fn direction_id(direction: &Coords) -> usize {
+    match direction {
+        Coords { x: 0, y: 1 } => 0,
+        Coords { x: 1, y: 0 } => 1,
+        Coords { x: 0, y: -1 } => 2,
+        Coords { x: -1, y: 0 } => 3,
+        _ => unreachable!(),
+    }
+}
+
+/* == Trait implementations == */
+
+impl PartialEq for Branch {
+    fn eq(&self, other: &Self) -> bool {
+        self.loss == other.loss
+    }
+}
+
+impl Eq for Branch {}
+
+impl PartialOrd for Branch {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(other.loss.cmp(&self.loss))
+    }
+}
+
+impl Ord for Branch {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.loss.cmp(&self.loss)
+    }
+}
+
+/* == Tests == */
 
 /* == Tests == */
 #[cfg(test)]
@@ -196,45 +225,5 @@ mod tests {
     fn test_ultra_crucible() {
         let result = part_two(&read_example_part(DAY, 2));
         assert_eq!(result, Some(71));
-    }
-
-    #[bench]
-    fn profile_exploration(b: &mut test::Bencher) {
-        let input = read_input(DAY);
-        let city = parse_input(&input);
-
-        let mut visited = HashSet::new();
-
-        let saved_branches: Vec<Branch> = city
-            .starting_vectors()
-            .sorted_by_key(|b| b.loss)
-            .rev()
-            .collect();
-
-        let mut branches = saved_branches.clone();
-
-        let turn_range = ULTRA_CRUCIBLE_RANGE;
-
-        b.iter(|| {
-            if branches.is_empty() {
-                branches = saved_branches.clone();
-            }
-
-            let branch = branches.pop().unwrap();
-
-            for new_branch in branch.next_branches(&city, &turn_range) {
-                if visited.insert(new_branch.id()) {
-                    let index = branches
-                        .iter()
-                        .enumerate()
-                        .rev()
-                        .find(|(_, branch)| branch.loss >= new_branch.loss)
-                        .map(|(i, _)| i)
-                        .unwrap_or(0);
-
-                    branches.insert(index, new_branch);
-                }
-            }
-        })
     }
 }

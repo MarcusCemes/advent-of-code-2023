@@ -24,7 +24,7 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 | [14][p14] | Parabolic Reflector Dish        | [14.rs][s14] |   ⭐   |   ⭐   |  48.8 µs | 25.6 ms |
 | [15][p15] | Lens Library                    | [15.rs][s15] |   ⭐   |   ⭐   |  54.8 µs |  266 µs |
 | [16][p16] | The Floor Will Be Lava          | [16.rs][s16] |   ⭐   |   ⭐   |   664 µs |  162 ms |
-| [17][p17] | Clumsy Crucible                 | [17.rs][s17] |   ⭐   |   ⭐   |   267 ms |   2.6 s |
+| [17][p17] | Clumsy Crucible                 | [17.rs][s17] |   ⭐   |   ⭐   |  18.1 ms | 58.3 ms |
 |           | ...                             |              |        |        |          |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
