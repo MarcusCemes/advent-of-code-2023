@@ -24,6 +24,7 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 | [14][p14] | Parabolic Reflector Dish        | [14.rs][s14] |   ⭐   |   ⭐   |  48.8 µs | 25.6 ms |
 | [15][p15] | Lens Library                    | [15.rs][s15] |   ⭐   |   ⭐   |  40.9 µs |  469 µs |
 | [16][p16] | The Floor Will Be Lava          | [16.rs][s16] |   ⭐   |   ⭐   |   1.3 ms |  348 ms |
+| [17][p17] | Clumsy Crucible                 | [17.rs][s17] |   ⭐   |   ⭐   |   288 ms |   2.7 s |
 |           | ...                             |              |        |        |          |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
@@ -49,7 +50,7 @@ This repository uses a modified version of [this template][template]. Thanks Fel
 Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 
 [rust-badge]: https://img.shields.io/badge/Rust-d55826?logo=rust&style=for-the-badge
-[solutions-badge]: https://img.shields.io/badge/solutions-32/50-brightgreen?logo=star&style=for-the-badge
+[solutions-badge]: https://img.shields.io/badge/solutions-34/50-brightgreen?logo=star&style=for-the-badge
 [advent-of-code]: https://adventofcode.com/
 [rust]: https://www.rust-lang.org/
 [template]: https://github.com/fspoettel/advent-of-code-rust
@@ -69,6 +70,7 @@ Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 [p14]: https://adventofcode.com/2023/day/14
 [p15]: https://adventofcode.com/2023/day/15
 [p16]: https://adventofcode.com/2023/day/16
+[p17]: https://adventofcode.com/2023/day/17
 [s01]: src/bin/01.rs
 [s02]: src/bin/02.rs
 [s03]: src/bin/03.rs
@@ -85,3 +87,4 @@ Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 [s14]: src/bin/14.rs
 [s15]: src/bin/15.rs
 [s16]: src/bin/16.rs
+[s17]: src/bin/17.rs

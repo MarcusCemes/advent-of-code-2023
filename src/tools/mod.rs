@@ -65,6 +65,12 @@ impl Display for Coords {
     }
 }
 
+impl Display for UCoords {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({},{})", self.x, self.y)
+    }
+}
+
 impl From<(i64, i64)> for Coords {
     fn from(val: (i64, i64)) -> Coords {
         Coords { x: val.0, y: val.1 }
