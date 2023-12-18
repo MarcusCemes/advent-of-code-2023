@@ -6,7 +6,7 @@ advent_of_code::solution!(10);
 
 use std::{fmt::Debug, iter};
 
-use advent_of_code::tools::*;
+use advent_of_code::tools::{algorithms::enclosed_area, *};
 use itertools::{unfold, Itertools};
 
 /* == Definitions == */
@@ -53,7 +53,7 @@ pub fn part_two(input: &str) -> Option<u32> {
 
     let maze = Maze::parse_input(input);
     let path = maze.find_path().inspect(|_| length += 1);
-    let area = enclosed_area(path);
+    let area = enclosed_area(path) as u32;
 
     Some(area - length / 2 + 1)
 }
@@ -82,13 +82,13 @@ impl Maze<'_> {
         self.lines[coords.y].as_bytes()[coords.x].into()
     }
 
-    fn find_path(&self) -> impl Iterator<Item = UCoords> + '_ {
+    fn find_path(&self) -> impl Iterator<Item = Coords> + '_ {
         let last = self.start;
         let current = self.connecting_cells(self.start).next().unwrap();
 
-        iter::once(last).chain(iter::once(current)).chain(unfold(
-            (last, current),
-            |(last, current)| {
+        iter::once(last.into())
+            .chain(iter::once(current.into()))
+            .chain(unfold((last, current), |(last, current)| {
                 let next = self.connected_cells(*current).find(|c| c != last).unwrap();
 
                 if next == self.start {
@@ -96,10 +96,9 @@ impl Maze<'_> {
                 } else {
                     *last = *current;
                     *current = next;
-                    Some(next)
+                    Some(next.into())
                 }
-            },
-        ))
+            }))
     }
 
     /// Returns the cells that are connected to the current cell, based on the symbol
@@ -171,24 +170,6 @@ impl From<u8> for Connection {
     }
 }
 
-/* == Functions == */
-
-/// Computes the enclosed area of a polygon, given its vertices,
-/// using the shoelace formula (fast determinant-based version).
-fn enclosed_area(mut path: impl Iterator<Item = UCoords>) -> u32 {
-    let first = path.next().unwrap();
-
-    let sum: i64 = iter::once(first)
-        .chain(path)
-        .chain(iter::once(first))
-        .map(Coords::from)
-        .tuple_windows()
-        .map(|(a, b)| a.x * b.y - b.x * a.y)
-        .sum();
-
-    sum.unsigned_abs() as u32 / 2
-}
-
 /* == Tests ==  */
 
 #[cfg(test)]
@@ -233,12 +214,5 @@ mod tests {
         let maze = Maze::parse_input(&input);
         let cursor = UCoords::new(90, 86);
         b.iter(|| maze.connected_cells(cursor).last());
-    }
-
-    #[bench]
-    fn profile_enclosed_area(b: &mut test::Bencher) {
-        let input = read_input(DAY);
-        let path: Vec<_> = Maze::parse_input(&input).find_path().collect();
-        b.iter(|| enclosed_area(path.iter().copied()));
     }
 }

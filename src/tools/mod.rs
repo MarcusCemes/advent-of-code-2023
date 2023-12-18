@@ -1,6 +1,8 @@
+pub mod algorithms;
+
 use std::{
     fmt::Display,
-    ops::{Add, AddAssign, Sub},
+    ops::{Add, AddAssign, Mul, Sub},
 };
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -55,6 +57,17 @@ impl Sub for Coords {
         Coords {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
+        }
+    }
+}
+
+impl Mul<i64> for Coords {
+    type Output = Coords;
+
+    fn mul(self, rhs: i64) -> Self::Output {
+        Coords {
+            x: rhs * self.x,
+            y: rhs * self.y,
         }
     }
 }

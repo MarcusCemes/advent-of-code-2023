@@ -25,6 +25,7 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 | [15][p15] | Lens Library                    | [15.rs][s15] |   ⭐   |   ⭐   |  54.8 µs |  266 µs |
 | [16][p16] | The Floor Will Be Lava          | [16.rs][s16] |   ⭐   |   ⭐   |   664 µs |  162 ms |
 | [17][p17] | Clumsy Crucible                 | [17.rs][s17] |   ⭐   |   ⭐   |  18.1 ms | 58.3 ms |
+| [18][p18] | Lavaduct Lagoon                 | [18.rs][s18] |   ⭐   |   ⭐   |  19.2 µs | 26.1 µs |
 |           | ...                             |              |        |        |          |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
@@ -71,6 +72,7 @@ Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 [p15]: https://adventofcode.com/2023/day/15
 [p16]: https://adventofcode.com/2023/day/16
 [p17]: https://adventofcode.com/2023/day/17
+[p18]: https://adventofcode.com/2023/day/18
 [s01]: src/bin/01.rs
 [s02]: src/bin/02.rs
 [s03]: src/bin/03.rs
@@ -88,3 +90,4 @@ Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 [s15]: src/bin/15.rs
 [s16]: src/bin/16.rs
 [s17]: src/bin/17.rs
+[s18]: src/bin/18.rs
