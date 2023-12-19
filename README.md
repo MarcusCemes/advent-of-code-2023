@@ -26,6 +26,7 @@ Hi! These are my Rust solutions for the [Advent of Code 2023][advent-of-code].
 | [16][p16] | The Floor Will Be Lava          | [16.rs][s16] |   ⭐   |   ⭐   |   664 µs |  162 ms |
 | [17][p17] | Clumsy Crucible                 | [17.rs][s17] |   ⭐   |   ⭐   |  18.1 ms | 58.3 ms |
 | [18][p18] | Lavaduct Lagoon                 | [18.rs][s18] |   ⭐   |   ⭐   |  19.2 µs | 26.1 µs |
+| [19][p19] | Aplenty                         | [19.rs][s19] |   ⭐   |   ⭐   |   229 µs |  195 µs |
 |           | ...                             |              |        |        |          |         |
 
 **Key**: ⭐ Completed &nbsp;&nbsp; 🎁 In progress &nbsp;&nbsp; 😔 Gave up
@@ -38,10 +39,6 @@ _Benchmarked on Intel i7-11800H @ 2.30 GHz (over many samples)._
 <i>¹ I noticed after some refactoring that benchmark times got ~2x slower, with the simpler part taking significantly longer. A ~2x speed increase (relative to initial benchmark) was obtained by only testing one part at a time (with the other commented out for dead-code removal)! This may be an extreme sensitivity to the layout of the linked binary and how this is loaded into the instruction cache? Or bad branch prediction?</i>
 </sub>
 
-## Verdict
-
-Caching seems fine.
-
 ## Acknowledgments
 
 This repository uses a modified version of [this template][template]. Thanks Felix!
@@ -51,7 +48,7 @@ This repository uses a modified version of [this template][template]. Thanks Fel
 Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 
 [rust-badge]: https://img.shields.io/badge/Rust-d55826?logo=rust&style=for-the-badge
-[solutions-badge]: https://img.shields.io/badge/solutions-34/50-brightgreen?logo=star&style=for-the-badge
+[solutions-badge]: https://img.shields.io/badge/solutions-38/50-brightgreen?logo=star&style=for-the-badge
 [advent-of-code]: https://adventofcode.com/
 [rust]: https://www.rust-lang.org/
 [template]: https://github.com/fspoettel/advent-of-code-rust
@@ -73,6 +70,7 @@ Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 [p16]: https://adventofcode.com/2023/day/16
 [p17]: https://adventofcode.com/2023/day/17
 [p18]: https://adventofcode.com/2023/day/18
+[p19]: https://adventofcode.com/2023/day/19
 [s01]: src/bin/01.rs
 [s02]: src/bin/02.rs
 [s03]: src/bin/03.rs
@@ -91,3 +89,4 @@ Distributed under the MIT Licence. See [LICENCE](LICENCE) for more information.
 [s16]: src/bin/16.rs
 [s17]: src/bin/17.rs
 [s18]: src/bin/18.rs
+[s19]: src/bin/19.rs

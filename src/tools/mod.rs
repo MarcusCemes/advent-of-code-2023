@@ -1,4 +1,5 @@
 pub mod algorithms;
+pub mod atom;
 
 use std::{
     fmt::Display,
