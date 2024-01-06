@@ -39,6 +39,36 @@ _Benchmarked on Intel i7-11800H @ 2.30 GHz (over many samples)._
 <i>¹ I noticed after some refactoring that benchmark times got ~2x slower, with the simpler part taking significantly longer. A ~2x speed increase (relative to initial benchmark) was obtained by only testing one part at a time (with the other commented out for dead-code removal)! This may be an extreme sensitivity to the layout of the linked binary and how this is loaded into the instruction cache? Or bad branch prediction?</i>
 </sub>
 
+## Verdict
+
+Doing this year in Rust was fun. As expected, the result is fast and efficient. Seeing solutions complete in microseconds, or even nanoseconds, was satisfying to say the least. I was surprised by how much I enjoyed using iterators, maybe a little too much. However, it's easy to get lost in premature optimization, static dispatch and avoiding heap allocation. Knowing your data structures, and choosing the right one for the job, makes a much more significant difference than the language itself. Unit tests were brilliant for testing solutions, before running them on the input data. The language is great for expressing the problem domain, although I do miss the conciseness of solutions in other languages (such as Python) that are often a fraction of the number of lines. The time saved writing such a solution is a valid trade off, despite taking orders of magnitude longer to run (i.e. a few seconds...).
+
+## Usage
+
+Install [Rust](https://www.rust-lang.org/).
+
+Run the following commands to run the project:
+
+```sh
+# Test all solutions on example data
+cargo test
+
+# Run all solutions with optimisations
+cargo all --release
+
+# Benchmark solutions for day 1
+cargo solve 1 --release --time
+```
+
+The Rust compiler will automatically download the required dependencies and compile each solution into its own binary that can be found in the `target/debug` or `target/release` directory, depending on whether the `--release` flag was used.
+
+To read the problem input from stdin, instead of a hardcoded file path, make a small modification to the `solution` macro in [day.rs](./src/template/mod.rs) that steps up the main function of each binary:
+
+```diff
+- let input = advent_of_code::template::read_input(DAY);
++ let input = advent_of_code::template::read_stdin();
+```
+
 ## Acknowledgments
 
 This repository uses a modified version of [this template][template]. Thanks Felix!

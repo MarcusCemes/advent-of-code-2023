@@ -1,5 +1,5 @@
 use crate::Day;
-use std::{env, fs};
+use std::{env, fs, io};
 
 pub mod aoc_cli;
 pub mod commands;
@@ -33,6 +33,10 @@ pub fn read_example_part(day: Day, case: u32) -> String {
     read_data("examples", &format!("{day}-{case}"))
 }
 
+pub fn read_stdin() -> String {
+    io::read_to_string(io::stdin()).expect("could not read stdin")
+}
+
 /// Creates the constant `DAY` and sets up the input and runner for each part.
 #[macro_export]
 macro_rules! solution {
@@ -42,7 +46,10 @@ macro_rules! solution {
 
         fn main() {
             use advent_of_code::template::runner::*;
+
             let input = advent_of_code::template::read_input(DAY);
+            // let input = advent_of_code::template::read_stdin();
+
             run_part(part_one, &input, DAY, 1);
             run_part(part_two, &input, DAY, 2);
         }
